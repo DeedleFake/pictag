@@ -1,0 +1,3 @@
+CREATE TABLE images (
+	id STRING PRIMARY KEY
+);
