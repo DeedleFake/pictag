@@ -4,6 +4,20 @@
 
 package db
 
+import (
+	"time"
+)
+
 type Image struct {
-	ID interface{}
+	ID             string
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+	ImageCreatedAt time.Time
+}
+
+type Tag struct {
+	ID        int64
+	Name      string
+	ImageID   string
+	CreatedAt time.Time
 }

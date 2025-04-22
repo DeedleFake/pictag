@@ -7,24 +7,63 @@ package db
 
 import (
 	"context"
+	"time"
 )
 
 const createImage = `-- name: CreateImage :one
-INSERT INTO images (id) VALUES (?) RETURNING id
+INSERT INTO images (id, image_created_at) VALUES (?, ?) RETURNING id, created_at, updated_at, image_created_at
 `
 
-func (q *Queries) CreateImage(ctx context.Context, id interface{}) (interface{}, error) {
-	row := q.db.QueryRowContext(ctx, createImage, id)
-	err := row.Scan(&id)
-	return id, err
+type CreateImageParams struct {
+	ID             string
+	ImageCreatedAt time.Time
+}
+
+func (q *Queries) CreateImage(ctx context.Context, arg CreateImageParams) (Image, error) {
+	row := q.db.QueryRowContext(ctx, createImage, arg.ID, arg.ImageCreatedAt)
+	var i Image
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.ImageCreatedAt,
+	)
+	return i, err
 }
 
 const getImage = `-- name: GetImage :one
-SELECT id FROM images WHERE id = ? LIMIT 1
+SELECT id, created_at, updated_at, image_created_at FROM images WHERE id = ? LIMIT 1
 `
 
-func (q *Queries) GetImage(ctx context.Context, id interface{}) (interface{}, error) {
+func (q *Queries) GetImage(ctx context.Context, id string) (Image, error) {
 	row := q.db.QueryRowContext(ctx, getImage, id)
-	err := row.Scan(&id)
-	return id, err
+	var i Image
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.ImageCreatedAt,
+	)
+	return i, err
+}
+
+const tagImage = `-- name: TagImage :one
+INSERT INTO tags (name, image_id) VALUES (?, ?) RETURNING id, name, image_id, created_at
+`
+
+type TagImageParams struct {
+	Name    string
+	ImageID string
+}
+
+func (q *Queries) TagImage(ctx context.Context, arg TagImageParams) (Tag, error) {
+	row := q.db.QueryRowContext(ctx, tagImage, arg.Name, arg.ImageID)
+	var i Tag
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.ImageID,
+		&i.CreatedAt,
+	)
+	return i, err
 }
