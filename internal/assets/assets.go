@@ -1,6 +1,7 @@
 package assets
 
 //go:generate pnpm build
+//go:generate go tool templ generate
 
 import (
 	"embed"
