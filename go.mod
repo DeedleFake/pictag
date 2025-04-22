@@ -2,9 +2,11 @@ module deedles.dev/pictag
 
 go 1.24.2
 
-tool (
-	github.com/evanw/esbuild/cmd/esbuild
-	github.com/sqlc-dev/sqlc/cmd/sqlc
+tool github.com/sqlc-dev/sqlc/cmd/sqlc
+
+require (
+	github.com/adrg/xdg v0.5.3
+	modernc.org/sqlite v1.37.0
 )
 
 require (
@@ -14,7 +16,6 @@ require (
 	github.com/cubicdaiya/gonp v1.0.4 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
-	github.com/evanw/esbuild v0.25.2 // indirect
 	github.com/fatih/structtag v1.2.0 // indirect
 	github.com/go-sql-driver/mysql v1.9.2 // indirect
 	github.com/google/cel-go v0.24.1 // indirect
@@ -59,5 +60,4 @@ require (
 	modernc.org/libc v1.62.1 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.9.1 // indirect
-	modernc.org/sqlite v1.37.0 // indirect
 )
