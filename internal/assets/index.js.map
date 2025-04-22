@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../assets/index.js"],
+  "sourcesContent": ["console.dir('This is a test.')\n"],
+  "mappings": "MAAA,QAAQ,IAAI,iBAAiB",
+  "names": []
+}
