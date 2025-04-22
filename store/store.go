@@ -90,3 +90,18 @@ func (s *Store) Load(name string) (image.Image, error) {
 	img, _, err := image.Decode(file)
 	return img, err
 }
+
+// Delete removes the named image from the store, deleting it from the
+// disk. This image does not return an error if the image is already
+// not in the store.
+func (s *Store) Delete(name string) error {
+	if len(name) != 64 {
+		return fmt.Errorf("%w: %q", ErrInvalidName, name)
+	}
+
+	err := s.root.Remove(filepath.Join(name[:2], name))
+	if err != nil && !errors.Is(err, os.ErrNotExist) {
+		return err
+	}
+	return nil
+}
