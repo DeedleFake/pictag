@@ -94,6 +94,8 @@ func schema(ctx context.Context, db *sql.DB) ([]string, error) {
 	return New(db).listMigrations(ctx)
 }
 
+// Migrate initializes the database and runs any migrations on it that
+// haven't already been applied.
 func Migrate(ctx context.Context, db *sql.DB) error {
 	skip, err := schema(ctx, db)
 	if err != nil {
