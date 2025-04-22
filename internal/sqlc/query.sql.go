@@ -67,3 +67,39 @@ func (q *Queries) TagImage(ctx context.Context, arg TagImageParams) (Tag, error)
 	)
 	return i, err
 }
+
+const addMigration = `-- name: addMigration :exec
+INSERT INTO migrations (name) VALUES (?)
+`
+
+func (q *Queries) addMigration(ctx context.Context, name string) error {
+	_, err := q.db.ExecContext(ctx, addMigration, name)
+	return err
+}
+
+const listMigrations = `-- name: listMigrations :many
+SELECT name FROM migrations ORDER BY name ASC
+`
+
+func (q *Queries) listMigrations(ctx context.Context) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, listMigrations)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var name string
+		if err := rows.Scan(&name); err != nil {
+			return nil, err
+		}
+		items = append(items, name)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

@@ -15,6 +15,10 @@ type Image struct {
 	ImageCreatedAt time.Time
 }
 
+type Migration struct {
+	Name string
+}
+
 type Tag struct {
 	ID        int64
 	Name      string
