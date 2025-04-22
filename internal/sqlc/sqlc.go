@@ -1,6 +1,6 @@
 package sqlc
 
-//go:generate go tool github.com/sqlc-dev/sqlc/cmd/sqlc generate
+//go:generate go tool sqlc generate
 
 import (
 	"context"
