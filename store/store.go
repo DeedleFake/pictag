@@ -55,7 +55,7 @@ func (s *Store) Encode(encode func(io.Writer, image.Image) error) {
 
 func (s *Store) store(name string, data []byte) error {
 	prefix := name[:2]
-	err := s.root.Mkdir(prefix, 0644)
+	err := s.root.Mkdir(prefix, 0755)
 	if err != nil && !errors.Is(err, os.ErrExist) {
 		return err
 	}
