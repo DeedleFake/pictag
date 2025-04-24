@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"flag"
 	"image"
 	"io"
@@ -26,6 +27,13 @@ import (
 	_ "golang.org/x/image/bmp"
 	_ "golang.org/x/image/tiff"
 )
+
+func withRequest(slog *slog.Logger, req *http.Request) *slog.Logger {
+	return slog.With(
+		"method", req.Method,
+		"path", req.URL.Path,
+	)
+}
 
 type handler struct {
 	store *store.Store
@@ -66,9 +74,33 @@ func initHandler(data string) *handler {
 	}
 }
 
+func (h *handler) listTags(rw http.ResponseWriter, req *http.Request) {
+	slog := withRequest(slog.Default(), req)
+
+	q := req.FormValue("q")
+	tags, err := sqlc.New(h.db).SearchTags(req.Context(), sqlc.SearchTagsParams{
+		Name:  q + "%",
+		Limit: 10,
+	})
+	if err != nil {
+		slog.Error("search tags", "query", q, "err", err)
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	err = json.NewEncoder(rw).Encode(tags)
+	if err != nil {
+		slog.Error("encode response", "err", err)
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+}
+
 func initRoutes(h *handler) {
 	http.Handle("GET /assets/", http.StripPrefix("/assets/", assets.Handler()))
 	http.Handle("GET /img/", http.StripPrefix("/img/", http.FileServerFS(h.store.FS())))
+
+	http.HandleFunc("GET /ui/list_tags", h.listTags)
 
 	http.HandleFunc("POST /test", func(rw http.ResponseWriter, req *http.Request) {
 		file, _, err := req.FormFile("image")
