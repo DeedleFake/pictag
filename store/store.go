@@ -7,10 +7,12 @@ import (
 	"errors"
 	"fmt"
 	"image"
-	"image/png"
 	"io"
+	"io/fs"
 	"os"
 	"path/filepath"
+
+	"github.com/HugoSmits86/nativewebp"
 )
 
 var ErrInvalidName = errors.New("invalid name")
@@ -20,7 +22,8 @@ var ErrInvalidName = errors.New("invalid name")
 // deduplicating them by the hash of the resulting data. It can then
 // retreive those images by identifying them by the resulting hash.
 type Store struct {
-	root *os.Root
+	root   *os.Root
+	encode func(io.Writer, image.Image) error
 }
 
 // Open opens a store rooted at path. The directory at path must
@@ -34,13 +37,20 @@ func Open(path string) (*Store, error) {
 	}
 
 	return &Store{
-		root: root,
+		root:   root,
+		encode: defaultEncode,
 	}, nil
 }
 
 // Close closes the store.
 func (s *Store) Close() error {
 	return s.root.Close()
+}
+
+// Encode sets the encoder used for storing the images to disk. The
+// default encoder stores images as lossless WebP.
+func (s *Store) Encode(encode func(io.Writer, image.Image) error) {
+	s.encode = encode
 }
 
 func (s *Store) store(name string, data []byte) error {
@@ -65,7 +75,7 @@ func (s *Store) Store(img image.Image) (string, error) {
 	h := sha256.New()
 	var buf bytes.Buffer // TODO: Move this to the disk in case it's huge?
 	w := io.MultiWriter(h, &buf)
-	err := png.Encode(w, img)
+	err := s.encode(w, img)
 	if err != nil {
 		return "", err
 	}
@@ -77,7 +87,7 @@ func (s *Store) Store(img image.Image) (string, error) {
 // Load returns the image identified by name, if it exists. If name is
 // invalid, an error equal to ErrInvalidName is returned.
 func (s *Store) Load(name string) (image.Image, error) {
-	if len(name) != 64 {
+	if !validName(name) {
 		return nil, fmt.Errorf("%w: %q", ErrInvalidName, name)
 	}
 
@@ -95,7 +105,7 @@ func (s *Store) Load(name string) (image.Image, error) {
 // disk. This image does not return an error if the image is already
 // not in the store.
 func (s *Store) Delete(name string) error {
-	if len(name) != 64 {
+	if !validName(name) {
 		return fmt.Errorf("%w: %q", ErrInvalidName, name)
 	}
 
@@ -104,4 +114,32 @@ func (s *Store) Delete(name string) error {
 		return err
 	}
 	return nil
+}
+
+// FS returns an fs.FS that can open images in the store as raw data,
+// allowing them to be, for example, served over HTTP more
+// efficiently.
+func (s *Store) FS() fs.FS {
+	return &filesystem{
+		store: s,
+	}
+}
+
+func defaultEncode(w io.Writer, img image.Image) error {
+	return nativewebp.Encode(w, img, nil)
+}
+
+func validName(name string) bool {
+	if len(name) != 64 {
+		return false
+	}
+
+	for _, c := range name {
+		valid := (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z')
+		if !valid {
+			return false
+		}
+	}
+
+	return true
 }

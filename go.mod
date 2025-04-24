@@ -8,6 +8,7 @@ tool (
 )
 
 require (
+	github.com/HugoSmits86/nativewebp v1.1.4
 	github.com/a-h/templ v0.3.857
 	github.com/adrg/xdg v0.5.3
 	modernc.org/sqlite v1.37.0
@@ -59,6 +60,7 @@ require (
 	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/crypto v0.36.0 // indirect
 	golang.org/x/exp v0.0.0-20250305212735-054e65f0b394 // indirect
+	golang.org/x/image v0.24.0 // indirect
 	golang.org/x/mod v0.24.0 // indirect
 	golang.org/x/net v0.38.0 // indirect
 	golang.org/x/sync v0.13.0 // indirect
