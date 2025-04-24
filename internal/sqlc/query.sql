@@ -12,3 +12,6 @@ INSERT INTO images (id, image_created_at) VALUES (?, ?) RETURNING *;
 
 -- name: TagImage :one
 INSERT INTO tags (name, image_id) VALUES (?, ?) RETURNING *;
+
+-- name: SearchTags :many
+SELECT name, COUNT(*) FROM tags WHERE name LIKE ? GROUP BY name ORDER BY COUNT(*) DESC, name ASC LIMIT ?;
