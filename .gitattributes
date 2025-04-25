@@ -1,1 +1,5 @@
-internal/assets/*.{js,js.map,css} binary
+internal/assets/*.js binary
+internal/assets/*.js.map binary
+internal/assets/*.css binary
+
+internal/ui/*_templ.go binary
