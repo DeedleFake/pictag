@@ -44,7 +44,23 @@ func (h *handler) listTags(rw http.ResponseWriter, req *http.Request) {
 func (h *handler) index(rw http.ResponseWriter, req *http.Request) {
 	slog := withRequest(slog.Default(), req)
 
-	err := ui.Index().Render(req.Context(), rw)
+	images, err := sqlc.New(h.db).ListImages(req.Context(), sqlc.ListImagesParams{
+		Limit: 10,
+	})
+	if err != nil {
+		slog.Error("list images", "err", err)
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	names := func(yield func(string) bool) {
+		for _, img := range images {
+			if !yield(img.ID) {
+				return
+			}
+		}
+	}
+
+	err = ui.Index(names).Render(req.Context(), rw)
 	if err != nil {
 		slog.Error("render component", "err", err)
 		rw.WriteHeader(http.StatusInternalServerError)
