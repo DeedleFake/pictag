@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-//go:embed *.js *.js.map
+//go:embed *.js *.js.map *.css
 var assets embed.FS
 
 func FS() fs.FS {
