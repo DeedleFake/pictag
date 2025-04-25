@@ -47,6 +47,43 @@ func (q *Queries) GetImage(ctx context.Context, id string) (Image, error) {
 	return i, err
 }
 
+const listImages = `-- name: ListImages :many
+SELECT id, created_at, updated_at, image_created_at FROM images ORDER BY created_at LIMIT ? OFFSET ?
+`
+
+type ListImagesParams struct {
+	Limit  int64
+	Offset int64
+}
+
+func (q *Queries) ListImages(ctx context.Context, arg ListImagesParams) ([]Image, error) {
+	rows, err := q.db.QueryContext(ctx, listImages, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Image
+	for rows.Next() {
+		var i Image
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ImageCreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const searchTags = `-- name: SearchTags :many
 SELECT name, COUNT(*) FROM tags WHERE name LIKE ? GROUP BY name ORDER BY COUNT(*) DESC, name ASC LIMIT ?
 `

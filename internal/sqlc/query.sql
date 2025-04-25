@@ -4,6 +4,9 @@ SELECT * FROM migrations ORDER BY name ASC;
 -- name: addMigration :exec
 INSERT INTO migrations (name) VALUES (?);
 
+-- name: ListImages :many
+SELECT * FROM images ORDER BY created_at LIMIT ? OFFSET ?;
+
 -- name: GetImage :one
 SELECT * FROM images WHERE id = ? LIMIT 1;
 
