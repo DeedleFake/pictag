@@ -1,5 +1,7 @@
 package ui
 
+import "iter"
+
 templ layout() {
 	<!DOCTYPE html>
 	<html>
@@ -14,8 +16,17 @@ templ layout() {
 	</html>
 }
 
-templ Index() {
+templ Index(images iter.Seq[string]) {
 	@layout() {
-		<div class="animate-pulse">This is a test.</div>
+		<div class="flex flex-row gap-2 m-2">
+			for name := range(images) {
+				<a
+					class="w-48 h-32 overflow-clip flex justify-center items-center"
+					href={ templ.URL("/img/" + name) }
+				>
+					<img src={ "/img/" + name }/>
+				</a>
+			}
+		</div>
 	}
 }
