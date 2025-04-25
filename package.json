@@ -5,7 +5,7 @@
   "main": "./assets/index.js",
   "scripts": {
     "build": "pnpm build:css && pnpm build:js",
-    "build:css": "tailwindcss -i ./assets/index.css -o ./internal/assets/index.css",
+    "build:css": "tailwindcss -i ./assets/index.css -o ./internal/assets/index.css --minify --optimize",
     "build:js": "esbuild --bundle ./assets/index.js --outfile=./internal/assets/index.js --minify --sourcemap",
     "dev": "esbuild --bundle ./assets/index.js --outfile=./internal/assets/index.js --minify --sourcemap --watch",
     "fmt": "prettier --write assets package.json"
