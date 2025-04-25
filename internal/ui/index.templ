@@ -18,6 +18,9 @@ templ layout() {
 
 templ Index(images iter.Seq[string]) {
 	@layout() {
+		@button(templ.URL("/add")) {
+			Add Image
+		}
 		<div class="flex flex-row gap-2 m-2">
 			for name := range(images) {
 				<a
