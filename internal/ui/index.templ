@@ -5,10 +5,17 @@ templ layout() {
 	<html>
 		<head>
 			<title>pictag</title>
+			<link rel="stylesheet" href="/assets/index.css"/>
 			<script type="application/json" src="/assets/index.js"></script>
 		</head>
 		<body>
 			{ children... }
 		</body>
 	</html>
+}
+
+templ Index() {
+	@layout() {
+		<div class="animate-pulse">This is a test.</div>
+	}
 }
