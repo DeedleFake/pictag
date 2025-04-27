@@ -7,6 +7,7 @@ package sqlc
 
 import (
 	"context"
+	"strings"
 	"time"
 )
 
@@ -45,6 +46,63 @@ func (q *Queries) GetImage(ctx context.Context, id string) (Image, error) {
 		&i.ImageCreatedAt,
 	)
 	return i, err
+}
+
+const imagesByTags = `-- name: ImagesByTags :many
+SELECT images.id, images.created_at, images.updated_at, images.image_created_at FROM images
+JOIN tags ON tags.image_id = images.id
+WHERE tags.name IN /*SLICE:tags*/?
+GROUP BY images.id
+HAVING COUNT(DISTINCT tags.name) = CAST(? AS INTEGER)
+LIMIT ? OFFSET ?
+`
+
+type ImagesByTagsParams struct {
+	Tags   []string
+	Length int64
+	Limit  int64
+	Offset int64
+}
+
+func (q *Queries) ImagesByTags(ctx context.Context, arg ImagesByTagsParams) ([]Image, error) {
+	query := imagesByTags
+	var queryParams []interface{}
+	if len(arg.Tags) > 0 {
+		for _, v := range arg.Tags {
+			queryParams = append(queryParams, v)
+		}
+		query = strings.Replace(query, "/*SLICE:tags*/?", strings.Repeat(",?", len(arg.Tags))[1:], 1)
+	} else {
+		query = strings.Replace(query, "/*SLICE:tags*/?", "NULL", 1)
+	}
+	queryParams = append(queryParams, arg.Length)
+	queryParams = append(queryParams, arg.Limit)
+	queryParams = append(queryParams, arg.Offset)
+	rows, err := q.db.QueryContext(ctx, query, queryParams...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Image
+	for rows.Next() {
+		var i Image
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ImageCreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const listImages = `-- name: ListImages :many

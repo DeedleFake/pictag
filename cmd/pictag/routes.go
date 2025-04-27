@@ -44,8 +44,10 @@ func (h *handler) listTags(rw http.ResponseWriter, req *http.Request) {
 func (h *handler) index(rw http.ResponseWriter, req *http.Request) {
 	slog := withRequest(slog.Default(), req)
 
-	images, err := sqlc.New(h.db).ListImages(req.Context(), sqlc.ListImagesParams{
-		Limit: 10,
+	images, err := sqlc.New(h.db).ImagesByTags(req.Context(), sqlc.ImagesByTagsParams{
+		Tags:   []string{"test"},
+		Length: 1,
+		Limit:  10,
 	})
 	if err != nil {
 		slog.Error("list images", "err", err)
