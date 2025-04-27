@@ -9,7 +9,7 @@ tool (
 
 require (
 	deedles.dev/ximage v0.0.0-20250321223218-e433919886dd
-	github.com/HugoSmits86/nativewebp v1.1.4
+	github.com/HugoSmits86/nativewebp v1.2.0
 	github.com/a-h/templ v0.3.857
 	github.com/adrg/xdg v0.5.3
 	golang.org/x/image v0.26.0
