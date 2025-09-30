@@ -1,1 +1,1 @@
-console.dir('This is a test.')
+import './alpine.js'
