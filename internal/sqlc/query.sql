@@ -22,7 +22,7 @@ SELECT name, COUNT(*) FROM tags WHERE name LIKE ? GROUP BY name ORDER BY COUNT(*
 -- name: ImagesByTags :many
 SELECT images.* FROM images
 JOIN tags ON tags.image_id = images.id
-WHERE tags.name IN sqlc.slice('tags')
+WHERE tags.name IN (sqlc.slice('tags'))
 GROUP BY images.id
 HAVING COUNT(DISTINCT tags.name) = CAST(@length AS INTEGER)
 LIMIT ? OFFSET ?;

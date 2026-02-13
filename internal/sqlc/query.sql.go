@@ -51,7 +51,7 @@ func (q *Queries) GetImage(ctx context.Context, id string) (Image, error) {
 const imagesByTags = `-- name: ImagesByTags :many
 SELECT images.id, images.created_at, images.updated_at, images.image_created_at FROM images
 JOIN tags ON tags.image_id = images.id
-WHERE tags.name IN /*SLICE:tags*/?
+WHERE tags.name IN (/*SLICE:tags*/?)
 GROUP BY images.id
 HAVING COUNT(DISTINCT tags.name) = CAST(? AS INTEGER)
 LIMIT ? OFFSET ?
