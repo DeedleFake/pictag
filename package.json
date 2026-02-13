@@ -28,5 +28,8 @@
     "plugins": [
       "prettier-plugin-jsdoc"
     ]
+  },
+  "dependencies": {
+    "react-router": "^7.13.0"
   }
 }
