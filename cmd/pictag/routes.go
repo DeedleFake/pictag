@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"log/slog"
 	"net/http"
 
@@ -39,7 +38,7 @@ func (h *handler) listTags(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	err = json.NewEncoder(rw).Encode(tags)
+	err = marshal(rw, tags)
 	if err != nil {
 		slog.Error("encode response", "err", err)
 		rw.WriteHeader(http.StatusInternalServerError)
@@ -69,7 +68,7 @@ func (h *handler) listImages(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	err = json.NewEncoder(rw).Encode(images)
+	err = marshal(rw, images)
 	if err != nil {
 		slog.Error("encode response", "err", err)
 		rw.WriteHeader(http.StatusInternalServerError)
