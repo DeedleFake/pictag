@@ -4,20 +4,19 @@
   "description": "",
   "main": "./assets/index.js",
   "scripts": {
-    "build": "pnpm build:css && pnpm build:js",
+    "build": "bun run build:css && bun run build:js",
     "build:css": "tailwindcss -i ./assets/index.css -o ./internal/assets/index.css --minify --optimize",
-    "build:js": "esbuild --bundle ./assets/index.js --outfile=./internal/assets/index.js --minify --sourcemap",
-    "dev": "esbuild --bundle ./assets/index.js --outfile=./internal/assets/index.js --minify --sourcemap --watch",
+    "build:js": "bun build --outdir=./internal/assets --minify --sourcemap ./assets/index.js",
+    "dev": "bun build --out=./internal/assets --minify --sourcemap --watch ./assets/index.js",
     "fmt": "prettier --write assets package.json"
   },
-  "packageManager": "pnpm@10.9.0",
   "devDependencies": {
-    "@tailwindcss/cli": "^4.1.13",
-    "alpinejs": "^3.15.0",
-    "esbuild": "^0.25.10",
-    "prettier": "^3.6.2",
-    "prettier-plugin-jsdoc": "^1.3.3",
-    "tailwindcss": "^4.1.13"
+    "@tailwindcss/cli": "^4.1.18",
+    "@types/bun": "latest",
+    "alpinejs": "^3.15.8",
+    "prettier": "^3.8.1",
+    "prettier-plugin-jsdoc": "^1.8.0",
+    "tailwindcss": "^4.1.18"
   },
   "prettier": {
     "useTabs": false,
@@ -29,5 +28,9 @@
     "plugins": [
       "prettier-plugin-jsdoc"
     ]
+  },
+  "private": true,
+  "peerDependencies": {
+    "typescript": "^5.9.3"
   }
 }

@@ -1,6 +1,6 @@
 package assets
 
-//go:generate pnpm build
+//go:generate bun run --bun build
 
 import (
 	"embed"
