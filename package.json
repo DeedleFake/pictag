@@ -4,8 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "bun build --outdir=./internal/ui/assets --minify --sourcemap --chunk-naming=[name].[ext] --asset-naming=[name].[ext] ./ui/index.html",
-    "fmt": "prettier --write ui package.json"
+    "build": "bun run build.ts",
+    "dev": "bun run --watch build.ts",
+    "fmt": "prettier --write ui package.json build.ts"
   },
   "devDependencies": {
     "@types/react": "^19",
@@ -30,6 +31,7 @@
     ]
   },
   "dependencies": {
-    "react-router": "^7.13.0"
+    "react-router": "^7.13.0",
+    "react-select": "^5.10.2"
   }
 }
