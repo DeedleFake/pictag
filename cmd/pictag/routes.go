@@ -14,13 +14,14 @@ func initRoutes(h *handler) {
 	http.Handle("GET /assets/", http.StripPrefix("/assets/", assets.Handler()))
 	http.Handle("GET /img/", http.StripPrefix("/img/", http.FileServerFS(h.store.FS())))
 
-	http.HandleFunc("GET /ui/list_tags", h.listTags)
+	http.HandleFunc("GET /api/list_tags", h.listTags)
 
 	http.HandleFunc("GET /", h.index)
 }
 
 func (h *handler) listTags(rw http.ResponseWriter, req *http.Request) {
 	slog := withRequest(slog.Default(), req)
+	rw.Header().Set("Content-Type", "application/json")
 
 	q := req.FormValue("q")
 	tags, err := sqlc.New(h.db).SearchTags(req.Context(), sqlc.SearchTagsParams{
