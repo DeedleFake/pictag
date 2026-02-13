@@ -5,11 +5,11 @@ import Search from './Search.tsx'
 export function Layout() {
   return (
     <div className="flex flex-col">
-      <div className="flex flex-row justify-between flex-1 bg-slate-500 p-4">
+      <div className="flex flex-row justify-between flex-1 p-4 bg-base-300 text-base-content">
         <NavLink className="text-lg" to="/">
           pictag
         </NavLink>
-        <NavLink className="btn" to="/add">
+        <NavLink className="btn btn-primary" to="/add">
           Add Image
         </NavLink>
       </div>

@@ -9,14 +9,17 @@
     "fmt": "prettier --write ui package.json build.ts"
   },
   "devDependencies": {
+    "@types/bun": "latest",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@types/bun": "latest",
     "bun-plugin-tailwind": "^0.1.2",
+    "daisyui": "^5.5.18",
     "prettier": "^3.8.1",
     "prettier-plugin-jsdoc": "^1.8.0",
     "react": "^19",
     "react-dom": "^19",
+    "react-router": "^7.13.0",
+    "react-select": "^5.10.2",
     "tailwindcss": "^4.1.11"
   },
   "prettier": {
@@ -29,9 +32,5 @@
     "plugins": [
       "prettier-plugin-jsdoc"
     ]
-  },
-  "dependencies": {
-    "react-router": "^7.13.0",
-    "react-select": "^5.10.2"
   }
 }
