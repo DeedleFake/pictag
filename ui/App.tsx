@@ -14,6 +14,10 @@ async function loadTags(input: string) {
 
 function Search() {
   const [searchParams, setSearchParams] = useSearchParams()
+  const defaultValue = searchParams.getAll('q').map((value) => ({
+    label: value,
+    value,
+  }))
 
   return (
     <div className="flex flex-col justify-start items-center">
@@ -22,6 +26,7 @@ function Search() {
         isMulti
         defaultOptions
         loadOptions={loadTags}
+        defaultValue={defaultValue}
         onChange={(vals) => {
           setSearchParams({ q: vals.map((val) => val.value) })
         }}
