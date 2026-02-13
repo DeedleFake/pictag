@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "bun build --outdir=./internal/ui/assets --minify --sourcemap ./ui/index.html",
+    "build": "bun build --outdir=./internal/ui/assets --minify --sourcemap --chunk-naming=[name].[ext] --asset-naming=[name].[ext] ./ui/index.html",
     "fmt": "prettier --write ui package.json"
   },
   "devDependencies": {
