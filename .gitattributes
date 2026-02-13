@@ -1,5 +1,1 @@
-internal/assets/*.js binary
-internal/assets/*.js.map binary
-internal/assets/*.css binary
-
-internal/ui/*_templ.go binary
+internal/ui/assets/* binary
