@@ -19,18 +19,16 @@ export function Search() {
   }))
 
   return (
-    <div className="flex flex-col justify-start items-center">
-      <AsyncSelect
-        className="w-100"
-        isMulti
-        defaultOptions
-        loadOptions={loadTags}
-        defaultValue={defaultValue}
-        onChange={(vals) => {
-          setSearchParams({ q: vals.map((val) => val.value) })
-        }}
-      />
-    </div>
+    <AsyncSelect
+      className="w-100"
+      isMulti
+      defaultOptions
+      loadOptions={loadTags}
+      defaultValue={defaultValue}
+      onChange={(vals) => {
+        setSearchParams({ q: vals.map((val) => val.value) })
+      }}
+    />
   )
 }
 
