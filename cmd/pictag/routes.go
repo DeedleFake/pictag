@@ -5,23 +5,28 @@ import (
 	"log/slog"
 	"net/http"
 
-	"deedles.dev/pictag/internal/assets"
 	"deedles.dev/pictag/internal/sqlc"
 	"deedles.dev/pictag/internal/ui"
 )
 
 func initRoutes(h *handler) {
-	http.Handle("GET /assets/", http.StripPrefix("/assets/", assets.Handler()))
 	http.Handle("GET /img/", http.StripPrefix("/img/", http.FileServerFS(h.store.FS())))
 
-	http.HandleFunc("GET /api/list_tags", h.listTags)
+	handleAPI("GET /api/list_tags", h.listTags)
+	handleAPI("GET /api/list_images", h.listImages)
 
-	http.HandleFunc("GET /", h.index)
+	http.Handle("GET /", ui.Handler())
+}
+
+func handleAPI(route string, h http.HandlerFunc) {
+	http.HandleFunc(route, http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		rw.Header().Set("Content-Type", "application/json")
+		h(rw, req)
+	}))
 }
 
 func (h *handler) listTags(rw http.ResponseWriter, req *http.Request) {
 	slog := withRequest(slog.Default(), req)
-	rw.Header().Set("Content-Type", "application/json")
 
 	q := req.FormValue("q")
 	tags, err := sqlc.New(h.db).SearchTags(req.Context(), sqlc.SearchTagsParams{
@@ -42,11 +47,19 @@ func (h *handler) listTags(rw http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func (h *handler) index(rw http.ResponseWriter, req *http.Request) {
+func (h *handler) listImages(rw http.ResponseWriter, req *http.Request) {
 	slog := withRequest(slog.Default(), req)
 
+	err := req.ParseForm()
+	if err != nil {
+		slog.Error("parse form", "err", err)
+		rw.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	q := req.Form["q"]
 	images, err := sqlc.New(h.db).ImagesByTags(req.Context(), sqlc.ImagesByTagsParams{
-		Tags:   []string{"test"},
+		Tags:   q,
 		Length: 1,
 		Limit:  10,
 	})
@@ -55,17 +68,10 @@ func (h *handler) index(rw http.ResponseWriter, req *http.Request) {
 		rw.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	names := func(yield func(string) bool) {
-		for _, img := range images {
-			if !yield(img.ID) {
-				return
-			}
-		}
-	}
 
-	err = ui.Index(names).Render(req.Context(), rw)
+	err = json.NewEncoder(rw).Encode(images)
 	if err != nil {
-		slog.Error("render component", "err", err)
+		slog.Error("encode response", "err", err)
 		rw.WriteHeader(http.StatusInternalServerError)
 		return
 	}
