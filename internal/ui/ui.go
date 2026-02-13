@@ -26,6 +26,13 @@ func FS() fs.FS {
 	return sub
 }
 
+func handleIndex(rw http.ResponseWriter, req *http.Request) {
+	http.ServeFileFS(rw, req, assets, "assets/index.html")
+}
+
 func Handler() http.Handler {
-	return http.FileServerFS(FS())
+	mux := http.NewServeMux()
+	mux.Handle("GET /assets/", http.FileServerFS(assets))
+	mux.HandleFunc("GET /", handleIndex)
+	return mux
 }

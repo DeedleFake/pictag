@@ -9,6 +9,7 @@ const result = await Bun.build({
     asset: '[name].[ext]',
   },
   entrypoints: ['./ui/index.html'],
+  publicPath: '/assets/',
   plugins: [tailwind],
 })
 
